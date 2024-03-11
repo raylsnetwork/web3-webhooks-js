@@ -48,13 +48,15 @@ npx prisma migrate dev
 
 A seguir, configuraremos as variáveis de ambiente com exemplos para uma blockchain privada ou pública.
 
-```javascript
+```bash
+--- Exemplo blockchain privada ---
+
 PORT= <port>
 WSConnect="ws://<IP da rede>"
 DATABASE_URL="postgresql://<usuario>:<senha>@<host>:<port>/<nome da base de dados>?schema=public"
 ```
 
-```javascript
+```bash
 --- Exemplo Infura ---
 
 PORT=<port>
