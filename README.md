@@ -1,73 +1,85 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <a href="" rel="noopener">
+ <img src="https://i.postimg.cc/k4xPc7vh/parfinlog.jpg" alt="Project logo"></a>
 </p>
+<h3 align="center"></h3>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Getting Started
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Nosso explorador cross-chain para blockchains compatíveis com Ethereum web3. Ele foi desenvolvido utilizando a moderna pilha tecnológica web - TypeScript, Node, Nest, Prisma, Docker, Ethers e PostgreSQL.
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+> O projeto ainda está em desenvolvimento, como resultado, pode haver alterações significativas antes da versão 1.0.0.
 
-## Installation
+
+
+
+### Instalação
+
+Inicialmente, procederemos à preparação do ambiente.
 
 ```bash
-$ npm install
+
+npm install
+
+# Preparar variável de ambiente
+cp ./.env
 ```
 
-## Running the app
+#### Configuração do Prisma.
+
+Pré-requisito: Instale o Prisma CLI globalmente com o comando npm install -g prisma.
+
+Gerar código TypeScript relacionado ao esquema do Prisma utilizando o seguinte comando: 
 
 ```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+npx prisma generate
 
-# production mode
-$ npm run start:prod
 ```
-
-## Test
+Executa as migrações da base de dados para o ambiente de desenvolvimento.
 
 ```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+npx prisma migrate dev
 
-# test coverage
-$ npm run test:cov
+```
+#### Variável de ambiente.
+
+A seguir, configuraremos as variáveis de ambiente com exemplos para uma blockchain privada ou pública.
+
+```json
+PORT= <port>
+WSConnect="ws://<IP da rede>"
+DATABASE_URL="postgresql://<usuario>:<senha>@<host>:<port>/<nome da base de dados>?schema=public"
 ```
 
-## Support
+```json
+--- Exemplo Infura ---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+PORT=<port>
 
-## Stay in touch
+DATABASE_URL="https://mainnet.infura.io/v3/your_infura_project_id"
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+WSConnect="wss://mainnet.infura.io/ws/v3/your_infura_project_id"
 
-## License
+--- Exemplo Alchemy ---
 
-Nest is [MIT licensed](LICENSE).
+PORT= <port>
+
+DATABASE_URL="https://polygon-mainnet.g.alchemy.com/v2/your_alchemy_api_key"
+
+WSConnect="wss://polygon-mainnet.g.alchemy.com/v2/ws/your_alchemy_api_key"
+```
+
+#### Dar início à aplicação
+
+
+```bash
+
+npm start
+
+```
+
+
+
