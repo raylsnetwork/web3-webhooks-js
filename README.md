@@ -6,7 +6,7 @@
 
 ## Getting Started
 
-Nosso explorador cross-chain para blockchains compatíveis com Ethereum web3. Ele foi desenvolvido utilizando a moderna pilha tecnológica web - TypeScript, Node, Nest, Prisma, Docker, Ethers e PostgreSQL.
+Nosso Webhook cross-chain para blockchains compatíveis com Ethereum web3. Ele foi desenvolvido utilizando a moderna pilha tecnológica web - TypeScript, Node, Nest, Prisma, Docker, Ethers e PostgreSQL.
 
 
 > O projeto ainda está em desenvolvimento, como resultado, pode haver alterações significativas antes da versão 1.0.0.
