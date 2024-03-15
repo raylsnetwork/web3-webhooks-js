@@ -9,9 +9,7 @@ async function monitorBlocks(): Promise<void> {
   console.log("monitorblocks called")
   return new Promise(async (_, reject) => {
     try {
-      console.log("monitorblocks promise called")
-      //leer documentacion de websocketprovider y encontrar en ethers encodesignature
-      
+      console.log("monitorblocks promise called")    
       const ws = new ethers.ethers.WebSocketProvider(process.env.WSConnect);
       ws.on('block', async (block) => {
         try {
@@ -106,5 +104,3 @@ async function monitorBlocks(): Promise<void> {
   });
 }
 export default monitorBlocks;
-
-
