@@ -14,7 +14,6 @@ async function monitorBlocks(): Promise<void> {
       
       const ws = new ethers.ethers.WebSocketProvider(process.env.WSConnect);
       ws.on('block', async (block) => {
-        console.log("henrique pidiu")
         try {
           const blockComplete = await ws.getBlock(block);
           console.log("block:", block);
@@ -30,24 +29,19 @@ async function monitorBlocks(): Promise<void> {
               const txHash = blockComplete.transactions[index];
               const transaction = await ws.getTransactionReceipt(txHash);
               const addresses = [];
-              const eventEncodedSigns = [];
+              const events = [];
               addresses.push(transaction.from);
               addresses.push(transaction.to);
-              //addresses.push(transaction.contractAddress)
-              //const eventSignature: string = 'Transfer(address,address,uint256)'
-              //abixsignature
-              //const eventTopic: string = ethers.id(eventSignature);
-              //console.log("topic",eventTopic)
 
               if (transaction.logs.length > 0) {
                 for (let i = 0; i < transaction.logs.length; i++) {
                   const log = transaction.logs[i];
                   if (log.topics.length> 0){
-                    eventEncodedSigns.push(log.topics[0])
+                    events.push({encodedSign:log.topics[0],logIndex:i,log:log})
                   }
                 }
               }
-              console.log("eventos", eventEncodedSigns)
+              console.log("eventos", events)
               //obtem as pessoas que seram avisadas se tiver um endereço envolvido que esteja no subscribe
               let subscribe = await prisma.subscribe.findMany({
                 where: {
@@ -62,23 +56,27 @@ async function monitorBlocks(): Promise<void> {
               //caso o subscribe seja para um evento especifico, remove caso no tenha o evento correto 
               subscribe = subscribe.filter(s=>
                 s.event==null
-                ||eventEncodedSigns.filter(e=>e==ethers.id(s.event)).length>0
+                ||events.filter(e=>e.encodedSign==ethers.id(s.event)).length>0
               );
               console.log("subscribe depois do filtro de eventos", subscribe)
-              console.log("filtros:", subscribe.filter(s => s.event == null || eventEncodedSigns.find(e => e == s.event)));
+              console.log("filtros:", subscribe.filter(s => s.event == null || events.find(e => e == s.event)));
 
               let transactionDTO = new TransactionDTO();
               transactionDTO.from= transaction.from;
               transactionDTO.to= transaction.to;
               transactionDTO.contractAddress= transaction.contractAddress;
-              transactionDTO.rawData=  transaction.hash, transaction.blockHash;
-              transactionDTO.rawTransactionData= transaction.gasUsed,transaction.gasPrice;
-              //transactionDTO.dateTime= transaction.time;
+              transactionDTO.rawTransactionData= JSON.stringify(transaction);
+              //transactionDTO.dateTime= ;
               transactionDTO.blockNumber= transaction.blockNumber;
 
               console.log("transactionDTO:",transactionDTO);
               console.log("subscribe:", subscribe);
               for (const sub of subscribe) {
+                let eventsToSub = events;
+                if(sub.event!=null){
+                  eventsToSub = events.filter(e=>e.encodedSign==ethers.id(sub.event))
+                }
+                transactionDTO.rawData=  JSON.stringify(eventsToSub);
                 fetch(sub.hostDest, {
                   body: JSON.stringify(transactionDTO),
                   method: 'POST',
@@ -105,4 +103,5 @@ async function monitorBlocks(): Promise<void> {
   });
 }
 export default monitorBlocks;
+
 
