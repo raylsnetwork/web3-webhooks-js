@@ -32,6 +32,7 @@ async function monitorBlocks(): Promise<void> {
               const events = [];
               addresses.push(transaction.from);
               addresses.push(transaction.to);
+             
 
               if (transaction.logs.length > 0) {
                 for (let i = 0; i < transaction.logs.length; i++) {
@@ -60,23 +61,25 @@ async function monitorBlocks(): Promise<void> {
               );
               console.log("subscribe depois do filtro de eventos", subscribe)
               console.log("filtros:", subscribe.filter(s => s.event == null || events.find(e => e == s.event)));
-
+              
+              const blockTime = new Date(blockComplete.timestamp * 1000);
               let transactionDTO = new TransactionDTO();
               transactionDTO.from= transaction.from;
               transactionDTO.to= transaction.to;
               transactionDTO.contractAddress= transaction.contractAddress;
               transactionDTO.rawTransactionData= JSON.stringify(transaction);
-              //transactionDTO.dateTime= ;
+              transactionDTO.dateTime= blockTime;
               transactionDTO.blockNumber= transaction.blockNumber;
 
-              console.log("transactionDTO:",transactionDTO);
+
               console.log("subscribe:", subscribe);
               for (const sub of subscribe) {
                 let eventsToSub = events;
                 if(sub.event!=null){
                   eventsToSub = events.filter(e=>e.encodedSign==ethers.id(sub.event))
                 }
-                transactionDTO.rawData=  JSON.stringify(eventsToSub);
+                transactionDTO.rawData = JSON.stringify(eventsToSub);
+                console.log("transactionDTO:",transactionDTO);
                 fetch(sub.hostDest, {
                   body: JSON.stringify(transactionDTO),
                   method: 'POST',
