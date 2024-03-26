@@ -14,7 +14,7 @@ async function monitorBlocks(): Promise<void> {
         try {
           const blockComplete = await ws.getBlock(block);
           console.log("block:", block);
-          console.log("blocktransactions:", blockComplete.transactions);
+          console.log("blocktransaction:", blockComplete.transactions);
           //Se houve transações, verifico se tenho subscribe para o to.
 
           if (blockComplete.transactions.length > 0) {
