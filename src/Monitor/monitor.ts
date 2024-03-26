@@ -6,10 +6,9 @@ import { TransactionDTO } from 'src/transaction.dto';
 
 
 async function monitorBlocks(): Promise<void> {
-  console.log("monitorblocks called")
+  
   return new Promise(async (_, reject) => {
-    try {
-      console.log("monitorblocks promise called")    
+    try {  
       const ws = new ethers.ethers.WebSocketProvider(process.env.WSConnect);
       ws.on('block', async (block) => {
         try {
