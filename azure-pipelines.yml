@@ -1,0 +1,35 @@
+trigger:
+  tags:
+    include:
+      - '*'
+  branches:
+    include:
+      - '*'
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: 'Parity/parfin.templates.ci-cd'
+      ref: 'main'
+
+stages:
+  - template: 'templates/stage/deploy-container-scripted.yml@templates'
+    parameters:
+      developmentVariableGroup: 'web3-hook-js-bv-prod'
+      stagingVariableGroup: 'web3-hook-js-bv-prod'
+      uatVariableGroup: 'web3-hook-js-bv-prod'
+      productionVariableGroup: 'web3-hook-js-bv-prod'
+      useAws: true
+      useAzr: false
+      useService: true
+      useIngress: true
+      useHealthCheck: false
+      
+      environment:
+        - 'PORT=80'
+        - 'DATABASE_URL="$(DATABASE_URL)"'
+        - 'WSConnect="$(WSConnect)"'
+      
