@@ -18,7 +18,7 @@ export class SubscribeController {
   @Post()
   @ApiBody({ type: CreateDTO })
   createSubscribe(@Body() subscribe: CreateDTO) {
-    console.log("funciona?")
+    console.log("post to new subscribe", subscribe);
     return this.appService.createSubscribe(subscribe);
   }
 

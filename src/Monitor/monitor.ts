@@ -77,7 +77,8 @@ async function monitorBlocks(): Promise<void> {
               transactionDTO.dateTime= blockTime;
               transactionDTO.blockNumber= transaction.blockNumber;
 
-              for (const sub of subscribe) {
+              for (let i = 0; i < subscribe.length; i++) {
+                const sub = subscribe[i];
                 let eventsToSub = events;
                 if(sub.event!=null){
                   const especifcEvent = events.filter(e=>e.encodedSign==ethers.id(sub.event));
@@ -86,11 +87,15 @@ async function monitorBlocks(): Promise<void> {
                 transactionDTO.rawData = JSON.stringify(eventsToSub);
                 console.log("transactionDTO..:",transactionDTO);
                 console.log("fetch post to..:",sub.hostDest);
-                fetch(sub.hostDest, {
-                  body: JSON.stringify(transactionDTO),
-                  method: 'post',
-                  headers: {'Content-Type': 'application/json'}
-                });
+                try{
+                  fetch(sub.hostDest, {
+                    body: JSON.stringify(transactionDTO),
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'}
+                  });
+                } catch(e){
+                  console.log("error on post web hook",e);
+                }
               }
             }
           }
