@@ -1,9 +1,10 @@
 import { prisma } from './db';
 import * as ethers from 'ethers';
 import fetch from 'node-fetch';
-
+import * as dotenv from 'dotenv';
 import { TransactionDTO } from 'src/transaction.dto';
 
+dotenv.config();
 
 async function monitorBlocks(): Promise<void> {
   
