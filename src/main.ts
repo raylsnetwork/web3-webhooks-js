@@ -7,6 +7,11 @@ import {
 } from 'nest-winston';
 import * as winston from 'winston';
 import monitorBlocks from './Monitor/monitor';
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({

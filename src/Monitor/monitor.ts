@@ -1,28 +1,47 @@
 import { prisma } from './db';
-import * as ethers from 'ethers';
+import { ethers } from 'ethers';
 import fetch from 'node-fetch';
 import * as dotenv from 'dotenv';
 import { TransactionDTO } from 'src/transaction.dto';
 
 dotenv.config();
 
-async function monitorBlocks(): Promise<void> {
-  
-  return new Promise(async (_, reject) => {
-    try {  
-      const ws = new ethers.ethers.WebSocketProvider(process.env.WSConnect);
-      ws.on('block', async (block) => {
-        try {
-          const blockComplete = await ws.getBlock(block);
-          console.log("##### Starting Block Process ##### Block:", block);
+export async function monitorBlocks(): Promise<void> {
 
-          if (blockComplete.transactions.length > 0) {
+  const ws = new ethers.WebSocketProvider(process.env.WSConnect);
+  
+  const healthInterval = setInterval(() => {
+    const state = ws.websocket.readyState;
+    if (state !== 1) {
+      console.warn(`Health-check: WebSocket não está aberto (readyState=${state}), reiniciando monitor…`);
+      clearInterval(healthInterval);
+      try { ws.websocket.close(); } catch {}
+      void monitorBlocks();
+    }
+  }, 30000);
+
+  ws.on('error', err => {
+    console.error('WebSocket error:', err);
+    // força reinício imediato
+    clearInterval(healthInterval);
+    try { ws.websocket.close(); } catch {}
+    setTimeout(() => void monitorBlocks(), 1000);
+  });
+
+  ws.on('block', async (blockNumber) => {
+    try {
+      console.log("##### Starting Block Process ##### Block:", blockNumber);
+      const block = await ws.getBlock(blockNumber);
+
+          // console.log("##### Starting Block Process ##### Block:", block);
+
+          if (block.transactions.length > 0) {
             for (
               let index = 0;
-              index < blockComplete.transactions.length;
+              index < block.transactions.length;
               index++
             ) {
-              const txHash = blockComplete.transactions[index];
+              const txHash = block.transactions[index];
               const transaction = await ws.getTransactionReceipt(txHash);
               console.log("transaction..:",transaction);
               console.log("transaction.logs..:",transaction.logs);
@@ -69,7 +88,7 @@ async function monitorBlocks(): Promise<void> {
               );
               console.log("subscribe depois do filtro de eventos", subscribe)
               
-              const blockTime = new Date(blockComplete.timestamp * 1000);
+              const blockTime = new Date(block.timestamp * 1000);
               let transactionDTO = new TransactionDTO();
               transactionDTO.from= transaction.from;
               transactionDTO.to= transaction.to;
@@ -88,33 +107,25 @@ async function monitorBlocks(): Promise<void> {
                 transactionDTO.rawData = JSON.stringify(eventsToSub);
                 console.log("transactionDTO..:",transactionDTO);
                 console.log("fetch post to..:",sub.hostDest);
-                try{
-                  fetch(sub.hostDest, {
+                try {
+                  await fetch(sub.hostDest, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(transactionDTO),
-                    method: 'post',
-                    headers: {'Content-Type': 'application/json'}
                   });
-                } catch(e){
-                  console.log("error on post web hook",e);
+                } catch (e) {
+                  console.error('Error posting webhook to', sub.hostDest, e);
                 }
               }
             }
           }
 
-          console.log("##### Block Process Finished ##### Block:", block);
-        } catch (error) {
-          reject(error);
-        }
-      });
-      ws.on('error', (ex) => {
-        console.log(ex);
-        reject('error');
-      });
-      console.log(ws.websocket.readyState);
-    } catch (ex) {
-      console.log(ex);
-      throw ex;
+          console.log("##### Block Process Finished ##### Block:", blockNumber);
+    } catch (err) {
+      console.error(`Error processing block ${blockNumber}:`, err);
     }
   });
+
+  console.log('WebSocket readyState:', ws.websocket.readyState);
 }
 export default monitorBlocks;
